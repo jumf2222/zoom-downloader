@@ -1,0 +1,55 @@
+/* #region Colors */
+.secondaryColor {
+  background: var(--secondary-color);
+}
+
+.tertiaryColor {
+  background: var(--tertiary-color);
+}
+
+.quaternaryColor {
+  background: var(--quaternary-color);
+}
+
+.secondaryFillColor {
+  color: var(--secondary-color);
+}
+
+.tertiaryFillColor {
+  color: var(--tertiary-color);
+}
+
+.quaternaryFillColor {
+  color: var(--quaternary-color);
+}
+
+.gray {
+  background: #9d9fa2;
+}
+/* #endregion */
+
+/* #region Limits */
+.maxWidth700 {
+  max-width: 700px;
+  margin: auto;
+}
+
+.maxWidth1100 {
+  max-width: 1100px;
+  margin: auto;
+}
+
+.maxWidth1400 {
+  max-width: 1400px;
+  margin: auto;
+}
+
+/* #endregion */
+
+.selected {
+  background: var(--tertiary-color);
+}
+
+.selected:hover {
+  background: var(--tertiary-color-lighten);
+}
