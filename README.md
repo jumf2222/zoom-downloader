@@ -1,6 +1,6 @@
-# Cors-Bypass
+# Zoom Downloader
 
-A simple express server to bypass cors
+A simple site to download zoom recordings
 
 ## Getting Started
 
@@ -9,7 +9,7 @@ A simple express server to bypass cors
 Clone the repo
 
 ```
-git clone https://github.com/jumf2222/cors-bypass.git
+git clone https://github.com/jumf2222/zoom-downloader.git
 ```
 
 Install the dependencies
@@ -25,7 +25,3 @@ npm start
 ```
 
 This will start a local development server at [localhost:25565](http://localhost:25565).
-
-## Demo Server
-
-https://free-cors-bypass.herokuapp.com/{YOUR_URL_HERE}
