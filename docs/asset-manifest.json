@@ -1,27 +1,27 @@
 {
   "files": {
     "main.css": "/zoom-downloader/static/css/main.56c36222.chunk.css",
-    "main.js": "/zoom-downloader/static/js/main.8cad095d.chunk.js",
-    "main.js.map": "/zoom-downloader/static/js/main.8cad095d.chunk.js.map",
-    "runtime-main.js": "/zoom-downloader/static/js/runtime-main.b9c813ec.js",
-    "runtime-main.js.map": "/zoom-downloader/static/js/runtime-main.b9c813ec.js.map",
+    "main.js": "/zoom-downloader/static/js/main.96bbb5d6.chunk.js",
+    "main.js.map": "/zoom-downloader/static/js/main.96bbb5d6.chunk.js.map",
+    "runtime-main.js": "/zoom-downloader/static/js/runtime-main.fc442b26.js",
+    "runtime-main.js.map": "/zoom-downloader/static/js/runtime-main.fc442b26.js.map",
     "static/css/2.0cfad52a.chunk.css": "/zoom-downloader/static/css/2.0cfad52a.chunk.css",
-    "static/js/2.156bfc0d.chunk.js": "/zoom-downloader/static/js/2.156bfc0d.chunk.js",
-    "static/js/2.156bfc0d.chunk.js.map": "/zoom-downloader/static/js/2.156bfc0d.chunk.js.map",
-    "static/js/3.ce4692eb.chunk.js": "/zoom-downloader/static/js/3.ce4692eb.chunk.js",
-    "static/js/3.ce4692eb.chunk.js.map": "/zoom-downloader/static/js/3.ce4692eb.chunk.js.map",
+    "static/js/2.ad298b7c.chunk.js": "/zoom-downloader/static/js/2.ad298b7c.chunk.js",
+    "static/js/2.ad298b7c.chunk.js.map": "/zoom-downloader/static/js/2.ad298b7c.chunk.js.map",
+    "static/js/3.347df253.chunk.js": "/zoom-downloader/static/js/3.347df253.chunk.js",
+    "static/js/3.347df253.chunk.js.map": "/zoom-downloader/static/js/3.347df253.chunk.js.map",
     "index.html": "/zoom-downloader/index.html",
     "service-worker.js": "/zoom-downloader/service-worker.js",
     "service-worker.js.map": "/zoom-downloader/service-worker.js.map",
     "static/css/2.0cfad52a.chunk.css.map": "/zoom-downloader/static/css/2.0cfad52a.chunk.css.map",
     "static/css/main.56c36222.chunk.css.map": "/zoom-downloader/static/css/main.56c36222.chunk.css.map",
-    "static/js/2.156bfc0d.chunk.js.LICENSE.txt": "/zoom-downloader/static/js/2.156bfc0d.chunk.js.LICENSE.txt"
+    "static/js/2.ad298b7c.chunk.js.LICENSE.txt": "/zoom-downloader/static/js/2.ad298b7c.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.b9c813ec.js",
+    "static/js/runtime-main.fc442b26.js",
     "static/css/2.0cfad52a.chunk.css",
-    "static/js/2.156bfc0d.chunk.js",
+    "static/js/2.ad298b7c.chunk.js",
     "static/css/main.56c36222.chunk.css",
-    "static/js/main.8cad095d.chunk.js"
+    "static/js/main.96bbb5d6.chunk.js"
   ]
 }

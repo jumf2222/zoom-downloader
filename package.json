@@ -6,6 +6,7 @@
   "dependencies": {
     "@mdi/js": "^5.9.55",
     "@mdi/react": "^1.5.0",
+    "date-fns": "^2.22.1",
     "react": "^17.0.2",
     "react-datepicker": "^3.8.0",
     "react-dom": "^17.0.2",
@@ -14,7 +15,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && mv build docs",
+    "build": "react-scripts build && rm -rf ./docs && mv -f -T ./build ./docs",
     "test": "react-scripts test"
   },
   "eslintConfig": {

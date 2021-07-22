@@ -1,4 +1,5 @@
-import { FunctionComponent, MouseEventHandler, useState } from "react";
+import { addMonths, format, isBefore, toDate } from "date-fns";
+import { FunctionComponent, MouseEventHandler, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useHistory } from "react-router";
@@ -16,7 +17,12 @@ const Component: FunctionComponent<IProps> = ({ isMobile, token, setToken, setUs
     const history = useHistory();
     const [isLoading, setIsLoading] = useState(false);
 
-    const [status, setStatus] = useState<string>("");
+    // const [status, setStatus] = useState<string>("Download Meetings");
+    const [meetings, setMeetings] = useState<any[]>([]);
+
+    const [totalRecordings, setTotalRecordings] = useState<number>(0);
+    const [downloaded, setDownloaded] = useState<number>(0);
+    const [remainingTime, setRemainingTime] = useState<number>(0);
 
     const [startDate, setStartDate] = useState<Date | null>(new Date("2016/1/1"));
     const [endDate, setEndDate] = useState<Date | null>(new Date());
@@ -58,62 +64,89 @@ const Component: FunctionComponent<IProps> = ({ isMobile, token, setToken, setUs
     // Fix for closing the datepicker on click
     const datePickerLabelClick: MouseEventHandler<HTMLLabelElement> = (e) => e.preventDefault();
 
-    const download = async () => {
+    const loadMeetings = async () => {
         if (!startDate || !endDate) return;
 
         setIsLoading(true);
-        let result = await fetch(
-            `https://free-cors-bypass.herokuapp.com/https://api.zoom.us/v2/users/${user.id
-            }/recordings?from=${startDate.toISOString().split("T")[0]
-            }&to=${endDate.toISOString().split("T")[0]
-            }&page_size=300`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "content-type": "application/json",
-                },
+
+        let meetings: any[] = [];
+        let pageToken = "";
+
+        let date = toDate(startDate);
+
+        do {
+            let result = await fetch(
+                `https://free-cors-bypass.herokuapp.com/https://api.zoom.us/v2/users/${user.id
+                }/recordings?from=${format(date, "yyyy-MM-dd")
+                }&to=${format(addMonths(date, 1), "yyyy-MM-dd")
+                }&next_page_token=${pageToken}&page_size=300`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "content-type": "application/json",
+                    },
+                }
+            );
+
+            switch (result.status) {
+                case STATUS_CODES.OK:
+                    break;
+
+                case STATUS_CODES.UNAUTHORIZED:
+                    return history.push("/user");
+
+                default:
+                    break;
             }
-        );
 
-        switch (result.status) {
-            case STATUS_CODES.OK:
-                break;
+            let data = await result.json();
+            console.log(data);
 
-            case STATUS_CODES.UNAUTHORIZED:
-                return history.push("/user");
+            if (!pageToken)
+                date = addMonths(date, 1);
 
-            default:
-                break;
+            pageToken = data.next_page_token;
+            meetings = [...meetings, ...data.meetings];
+            setMeetings(meetings);
+
+        } while (pageToken || isBefore(date, endDate));
+
+        setIsLoading(false);
+    };
+
+    useEffect(() => {
+        let total = 0;
+
+        for (const meeting of meetings) {
+            total += meeting.recording_files.length;
         }
 
-        let data = await result.json();
-        console.log(data);
+        console.log("HERE", meetings);
+        setTotalRecordings(total);
+    }, [meetings]);
+
+    const download = async () => {
+        if (!startDate || !endDate || meetings.length === 0) return;
+
+        setIsLoading(true);
+
+        let downloaded = 0;
+        setDownloaded(0);
+        setRemainingTime(0);
 
         try {
             const rootDir = await window.showDirectoryPicker();
 
-
-            let total = 0;
-            let downloaded = 0;
-
-            for (const meeting of data.meetings) {
-                total += meeting.recording_files.length;
-            }
-
             let startTime = performance.now();
 
-            setStatus(`Downloaded ${downloaded}/${total}`);
-
-            for (const meeting of data.meetings) {
-                // console.log(meeting);
-                // console.log("test");
-
+            for (const meeting of meetings) {
                 const meetingDir = await rootDir.getDirectoryHandle(`${meeting.topic} (${meeting.id})`.replaceAll(/[\\/:*?"<>|]/g, "-"), { create: true });
 
                 for (const recording of meeting.recording_files) {
                     try {
                         if (await meetingDir.getFileHandle(`${recording.id}.${recording.file_extension}`)) {
-                            setStatus(`Downloaded ${++downloaded}/${total} ${downloaded < total ? `(${((performance.now() - startTime) * total / downloaded / 1000).toFixed(2)}s remaining)` : ""}`);
+                            setDownloaded(++downloaded);
+                            setRemainingTime(((performance.now() - startTime) * totalRecordings / downloaded / 1000));
                             continue;
                         }
                     } catch (error) { }
@@ -131,12 +164,15 @@ const Component: FunctionComponent<IProps> = ({ isMobile, token, setToken, setUs
                         await response.body.pipeTo(await recordingFileHandle.createWritable());
                     }
 
-                    setStatus(`Downloaded ${++downloaded}/${total} ${downloaded < total ? `(${((performance.now() - startTime) * total / downloaded / 1000).toFixed(2)}s remaining)` : ""}`);
+                    setDownloaded(++downloaded);
+                    setRemainingTime(((performance.now() - startTime) * totalRecordings / downloaded / 1000));
                 }
             }
         } catch (error) {
-            setIsLoading(false);
+            console.error(error);
         }
+
+        setRemainingTime(0);
         setIsLoading(false);
     };
 
@@ -167,8 +203,25 @@ const Component: FunctionComponent<IProps> = ({ isMobile, token, setToken, setUs
                 />
                 <p className="error">{endDateErrors}</p>
             </label>
-            <button disabled={isLoading}>{isLoading ? <div className="spinner" /> : "Download"}</button>
-            <p>{status}</p>
+            <div className="vbox gap">
+                <div className="hbox gap">
+                    <button className="spacer hbox" disabled={isLoading} type="button" onClick={loadMeetings}>
+                        <div className="spacer" />
+                        {isLoading ? <div className="spinner" /> : "Load Meetings"}
+                        {isLoading ? <p>{` ${meetings.length}`}</p> : null}
+                        {!isLoading ? <p>{` (${meetings.length})`}</p> : null}
+                        <div className="spacer" />
+                    </button>
+                    <button className="spacer hbox" disabled={isLoading || meetings.length === 0}>
+                        <div className="spacer" />
+                        {isLoading ? <div><div className="spinner" /></div> : "Download Recordings"}
+                        {!isLoading ? <p>{totalRecordings > 0 ? ` (${downloaded}/${totalRecordings})` : ""}</p> : null}
+                        {isLoading ? <p>{totalRecordings > 0 ? ` ${downloaded}/${totalRecordings} ` : ""}</p> : null}
+                        <p>{remainingTime > 0 ? ` (${remainingTime.toFixed(2)}s remaining)` : ""}</p>
+                        <div className="spacer" />
+                    </button>
+                </div>
+            </div>
         </form>
     </div>;
 };
